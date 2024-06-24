@@ -7,7 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function Login({ status, canResetPassword }) {
+export default function Login({ status, canResetPassword, googleLogo }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -77,7 +77,7 @@ export default function Login({ status, canResetPassword }) {
                     </label>
                 </div>
 
-                <div className="flex items-center justify-end mt-4">
+                <div className="flex items-center justify-start mt-4 border-b pb-3">
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
@@ -91,6 +91,10 @@ export default function Login({ status, canResetPassword }) {
                         Log in
                     </PrimaryButton>
                 </div>
+                <a href={route('google.redirect')} className="flex items-center justify-center">
+                    <img src={googleLogo} alt="google logo" />
+                    <p className>Login with Google</p>
+                </a>
             </form>
         </GuestLayout>
     );
