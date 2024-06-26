@@ -7,7 +7,7 @@ export default function DeleteButton({ className = '', disabled, children, ...pr
     if (className.includes('btn-sm')) size = 'py-1'
 
     return (
-        <DangerButton disabled={disabled} className={`gap-1 ${size}`}>
+        <DangerButton type={'button'} disabled={disabled} className={`gap-1 ${size}`}>
             <DeleteIcon />
             Delete
         </DangerButton>

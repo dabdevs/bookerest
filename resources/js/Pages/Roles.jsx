@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import PrimaryButton from '@/Components/SaveButton';
 import DeleteButton from '@/Components/DeleteButton';
@@ -8,8 +8,6 @@ import SaveButton from '@/Components/SaveButton';
 import { useForm } from '@inertiajs/react';
 
 export default function Roles({ auth, roles }) {
-    const [rowId, setRowId] = useState('')
-    const [role, setRole] = useState('')
     const [inputError, setInputError] = useState('')
     const [deleteBtnDisabled, setDeleteBtnDisabled] = useState(false)
     const { data, setData, post, put, processing, errors, reset } = useForm({
@@ -17,45 +15,38 @@ export default function Roles({ auth, roles }) {
         name: '',
     });
 
-    useEffect(() => {
-        setData({id: rowId, name: role})
-    }, [rowId, role])
-
-    const selectRow = (e) => {
+    const selectRow = useCallback((e) => {
         const checked = e.target.checked
         const id = parseInt(e.target.value)
 
         // Clean any input error
         setInputError('')
 
-        // Empty role value
-        setRole('')
-
-        // Uncheck all other inputs
-        if (rowId !== '') document.getElementById(`row-${rowId}`).checked = false
+        // Uncheck previous selected input
+        if (data.id !== '') {
+            document.getElementById(`row-${data.id}`).checked = false
+        }
         
         if (checked) {
-            // Set row Id
-            setRowId(id)
-
-            // Set existing role value inside input
-            setRole(document.getElementById(`row-${id}`).name)
+            // Set data
+            const $input = document.getElementById(`row-${id}`)
+            setData({ id: id, name: $input.name })
 
             // Disable all delete buttons
             setDeleteBtnDisabled(true)
         } else {
-            // Reset active row
-            setRowId('')
+            // Reset data
+            setData({id: '', name: ''})
 
             // Enable all delete buttons
             setDeleteBtnDisabled(false)
         }
-    }
+    }, [data.id])
 
     const submit = (e) => {
         e.preventDefault();
 
-        if (role === '') {
+        if (data.name === '') {
             setInputError(data.id)
             return
         }
@@ -66,11 +57,10 @@ export default function Roles({ auth, roles }) {
         // Send update request
         put(route('roles.update', data.id))
 
-        // Uncheck row
-        document.getElementById(`row-${rowId}`).checked = false
+        // Uncheck selected row
+        document.getElementById(`row-${data.id}`).checked = false
 
-        // Deactivate selected row
-        setRowId('')
+        setData({id: '', name: ''})
 
         // Enable all delete buttons
         setDeleteBtnDisabled(false)
@@ -91,12 +81,7 @@ export default function Roles({ auth, roles }) {
                                         <thead className="bg-gray-50">
                                             <tr>
                                                 <th scope="col" className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500">
-                                                    <div className="flex items-center gap-x-3">
-                                                        <input type="checkbox" className="text-blue-500 border-gray-300 rounded" />
-                                                        <button className="flex items-center gap-x-2">
-                                                            <span>ID</span>
-                                                        </button>
-                                                    </div>
+                                                    <span className='pl-6'>ID</span>
                                                 </th>
 
                                                 <th scope="col" className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500">
@@ -127,9 +112,9 @@ export default function Roles({ auth, roles }) {
                                                     </td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                         {
-                                                            rowId === r.id ?
+                                                            data.id === r.id ?
                                                                 <>
-                                                                    <input autoFocus onChange={(e) => setRole(e.target.value)} value={role} className={`border ${inputError === r.id ? 'border-red-400' : 'border-gray-400'} rounded p-1 text-gray-800 focus:ring-0 sm:text-sm sm:leading-6`} />
+                                                                    <input autoFocus onChange={(e) => setData({ id: r.id, name: e.target.value })} value={data.name} name={r.name} className={`border ${inputError === r.id ? 'border-red-400' : 'border-gray-400'} rounded p-1 text-gray-800 focus:ring-0 sm:text-sm sm:leading-6`} />
                                                                     {
                                                                         inputError === r.id &&
                                                                         <div className='text-red-400'>Field is required</div>
@@ -142,7 +127,7 @@ export default function Roles({ auth, roles }) {
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">{formatDistanceToNow(parseISO(r.updated_at))} ago</td>
                                                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                                                         <div className="flex items-center gap-x-6">
-                                                            {rowId === r.id ?
+                                                            {data.id === r.id ?
                                                                 <SaveButton className='btn-sm' />
                                                                 : <DeleteButton disabled={deleteBtnDisabled} className='btn-sm' />
                                                             }
