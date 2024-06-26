@@ -1,14 +1,17 @@
+import { usePage } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react'
 
-export default function FlashMessage({ message }) {
-    const [msg, setMsg] = useState(message || null)
+export default function FlashMessage() {
+    const { flash } = usePage().props
+    const message = flash.success ? { type: 'success', content: flash.success } : flash.error ? { type: 'error', content: flash.error } : null
+    const [msg, setMsg] = useState(null)
+    
+    useEffect(() => setMsg(message), [flash])
 
-    // useEffect(() => setMsg(message), [])
-    console.log(msg)
     if (!msg) return null
 
     return (
-        <div class={`w-[350px] absolute end-1 bottom-1 ${msg?.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-sm text-white rounded-md shadow-lg mb-3 ml-3`} role="alert">
+        <div className={`w-[350px] absolute end-1 bottom-1 ${msg?.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-sm text-white rounded-md shadow-lg mb-3 ml-3`} role="alert">
             <div className="flex p-4">
                 {msg?.content}
 

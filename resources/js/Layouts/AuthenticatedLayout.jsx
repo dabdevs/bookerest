@@ -2,13 +2,12 @@ import { useState } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import FlashMessage from '@/Components/FlashMessage';
 import Sidebar from '@/Components/Sidebar';
 
 export default function AuthenticatedLayout({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const { flash } = usePage().props;
     
     return (
         <div className="min-h-screen bg-gray-100">
@@ -125,7 +124,7 @@ export default function AuthenticatedLayout({ user, header, children }) {
                 <Sidebar />
 
                 <div className='px-4 w-full'>
-                    <FlashMessage message={flash.success ? { type: 'success', content: flash.success } : flash.error ? { type: 'error', content: flash.error } : null} />
+                    <FlashMessage />
                     
                     {children}
                 </div>
