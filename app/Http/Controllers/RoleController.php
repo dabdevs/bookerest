@@ -24,6 +24,16 @@ class RoleController extends Controller
         ]);
     }
 
+    public function store(RoleRequest $request) 
+    {
+        try {
+            Role::create(["name" => $request->name]);
+            return redirect()->back()->with('success', 'Role updated successfuly.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
     public function update(RoleRequest $request)
     {
         try {
@@ -33,7 +43,7 @@ class RoleController extends Controller
 
             return redirect()->back()->with('success', 'Role updated successfuly.');
         } catch (\Throwable $th) {
-            throw $th;
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 }
