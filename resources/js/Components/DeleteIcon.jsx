@@ -1,8 +1,8 @@
 import React from 'react'
 
-export default function DeleteIcon() {
+export default function DeleteIcon({ className }) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" stroke="currentColor" className={`${className} w-4 h-4 text-white`}>
             <path d="M10 12V17" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M14 12V17" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M4 7H20" strokeLinecap="round" strokeLinejoin="round" />

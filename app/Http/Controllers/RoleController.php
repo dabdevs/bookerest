@@ -8,6 +8,9 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    /**
+     *  Render index page
+     */
     public function index()
     {
         $roles = Role::all()->map(function ($role) {
@@ -24,6 +27,9 @@ class RoleController extends Controller
         ]);
     }
 
+    /**
+     *  Store a new role
+     */
     public function store(RoleRequest $request) 
     {
         try {
@@ -34,6 +40,9 @@ class RoleController extends Controller
         }
     }
 
+    /**
+     *  Update existing row
+     */
     public function update(RoleRequest $request)
     {
         try {
@@ -41,6 +50,19 @@ class RoleController extends Controller
 
             $role->update($request->all());
 
+            return redirect()->back()->with('success', 'Role updated successfuly.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    /**
+     *  Delete existing row
+     */
+    public function destroy($id) 
+    {
+        try {
+            Role::destroy($id);
             return redirect()->back()->with('success', 'Role updated successfuly.');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
