@@ -1,71 +1,30 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import DeleteButton from '@/Components/DeleteButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import NewButton from '@/Components/NewButton';
-import SaveButton from '@/Components/SaveButton';
 import { useForm } from '@inertiajs/react';
-import TextInput from '@/Components/TextInput';
 import RoleForm from '@/Components/forms/RoleForm';
+import EditButton from '@/Components/EditButton';
 
 export default function Roles({ auth, roles }) {
     const [showForm, setShowForm] = useState(false)
-    const [inputError, setInputError] = useState('')
-    const [disableBtn, setDisableBtn] = useState(false)
     const { data, setData, post, put, delete:destroy, processing, errors, reset } = useForm({
         id: '',
         name: '',
     });
 
-    const selectRow = useCallback((e) => {
-        const checked = e.target.checked
-        const id = parseInt(e.target.value)
-
-        // Clean any input error
-        setInputError('')
-
-        // Uncheck previous selected input
-        if (data.id !== '') {
-            document.getElementById(`row-${data.id}`).checked = false
-        }
-
-        if (checked) {
-            // Set data
-            const $input = document.getElementById(`row-${id}`)
-            setData({ id: id, name: $input.name })
-
-            // Disable all delete buttons
-            setDisableBtn(true)
-        } else {
-            // Reset data
-            setData({ id: '', name: '' })
-
-            // Enable all delete buttons
-            setDisableBtn(false)
-        }
-    }, [data.id])
-
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        if (data.name === '') {
-            setInputError(data.id)
-            return
-        }
+        setData('name', '')
 
-        // Clean any input error
-        setInputError('')
+        setShowForm(!showForm)
 
         // Send update request
         put(route('roles.update', data.id))
 
-        // Uncheck selected row
-        document.getElementById(`row-${data.id}`).checked = false
-
         setData({ id: '', name: '' })
-
-        // Enable all delete buttons
-        setDisableBtn(false)
     };
 
     const handleCreate = (e) => {
@@ -73,11 +32,13 @@ export default function Roles({ auth, roles }) {
 
         // Send create request
         post(route('roles.store', data))
-
-        setData('name', '')
-
-        // Hide form
-        setShowForm(false)
+        console.log(Object.keys(errors).length === 0)
+        if (Object.keys(errors).length === 0) {
+            setData('name', '')
+        } else {
+            console.log('close form')
+            setShowForm(false)
+        }
     }
     
     const handleDelete = (id) => {
@@ -88,8 +49,8 @@ export default function Roles({ auth, roles }) {
         setData('id', '')
     }
 
-    const openForm = () => {
-        setData('name', '')
+    const openForm = (data={}) => {
+        setData(data)
         setShowForm(!showForm)
     }
 
@@ -98,18 +59,18 @@ export default function Roles({ auth, roles }) {
             user={auth.user}
         >
             <section className="w-full px-4 container mx-auto">
-                <NewButton disabled={disableBtn} onClick={openForm} />
+                <NewButton onClick={() => openForm()} />
 
                 <div className="flex flex-col">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="overflow-hidden border border-gray-200 md:rounded-lg">
-                                <form onSubmit={handleUpdate}>
+                                <form>
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead className="bg-gray-50">
                                             <tr>
                                                 <th scope="col" className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500">
-                                                    <span className='pl-6'>ID</span>
+                                                    ID
                                                 </th>
 
                                                 <th scope="col" className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500">
@@ -133,13 +94,10 @@ export default function Roles({ auth, roles }) {
                                             {roles?.map(r => (
                                                 <tr key={r.id}>
                                                     <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                                                        <div className="inline-flex items-center gap-x-3">
-                                                            <input value={r.id} onClick={selectRow} id={`row-${r.id}`} name={r.name} type="checkbox" className="text-blue-500 border-gray-300 rounded" />
-                                                            <span>{r.id}</span>
-                                                        </div>
+                                                        {r.id}
                                                     </td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                                        {
+                                                        {/* {
                                                             data.id === r.id ?
                                                                 <>
                                                                     <div className="w-full">
@@ -158,16 +116,19 @@ export default function Roles({ auth, roles }) {
                                                                     }
                                                                 </>
                                                                 : r.name
-                                                        }
+                                                        } */}
+                                                        {r.name}
                                                     </td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">{format(new Date(r.created_at), 'MMMM dd, yyyy')}</td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">{formatDistanceToNow(parseISO(r.updated_at))} ago</td>
                                                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                                                         <div className="flex items-center gap-x-6">
-                                                            {data.id === r.id ?
+                                                            <EditButton onClick={() => openForm({ 'id': r.id, name: r.name })} className='btn-sm' />
+                                                            <DeleteButton onClick={() => handleDelete(r.id)} className='btn-sm' />
+                                                            {/* {data.id === r.id ?
                                                                 <SaveButton className='btn-sm' />
-                                                                : <DeleteButton onClick={() => handleDelete(r.id)} disabled={disableBtn} className='btn-sm' />
-                                                            }
+                                                                : <DeleteButton onClick={() => handleDelete(r.id)} className='btn-sm' />
+                                                            } */}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -180,7 +141,7 @@ export default function Roles({ auth, roles }) {
                     </div>
                 </div>
 
-                {showForm && <RoleForm data={data} setData={setData} errors={errors} setShowForm={setShowForm} submit={handleCreate} />}
+                {showForm && <RoleForm data={data} setData={setData} errors={errors} setShowForm={setShowForm} submit={data.id ? handleUpdate : handleCreate} />}
             </section>
         </AuthenticatedLayout>
     )

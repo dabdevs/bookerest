@@ -22,9 +22,9 @@ export default function RoleForm({ setShowForm, submit, data, setData, errors })
                                         id="name"
                                         type="name"
                                         name="name"
-                                        value={data.name}
+                                        defaultValue={data.name}
                                         className="mt-1 border py-2 block w-full"
-                                        isFocused={true}
+                                        autoFocus
                                         onChange={(e) => setData('name', e.target.value)}
                                     />
 
