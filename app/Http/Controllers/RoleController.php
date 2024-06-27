@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Role;
 class RoleController extends Controller
 {
     /**
-     *  Render index page
+     *  Render role view
      */
     public function index()
     {
@@ -17,8 +17,8 @@ class RoleController extends Controller
             return [
                 'id' => $role->id,
                 'name' => $role->name,
-                'created_at' => $role->created_at->toIso8601String(), // Format date to ISO 8601 string
-                'updated_at' => $role->created_at->toIso8601String(), // Format date to ISO 8601 string
+                'created_at' => $role->created_at->toIso8601String(), 
+                'updated_at' => $role->created_at->toIso8601String(), 
             ];
         });
 
@@ -41,7 +41,7 @@ class RoleController extends Controller
     }
 
     /**
-     *  Update existing row
+     *  Update existing role
      */
     public function update(RoleRequest $request)
     {
@@ -57,7 +57,7 @@ class RoleController extends Controller
     }
 
     /**
-     *  Delete existing row
+     *  Delete existing role
      */
     public function destroy($id) 
     {
