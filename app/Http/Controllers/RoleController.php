@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleRequest;
-use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -33,8 +33,8 @@ class RoleController extends Controller
     public function store(RoleRequest $request) 
     {
         try {
-            Role::create(["name" => $request->name]);
-            return redirect()->back()->with('success', 'Role updated successfuly.');
+            Role::create(["name" => Str::lower($request->name)]);
+            return redirect()->back()->with('success', 'Role created successfuly.');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
@@ -63,7 +63,7 @@ class RoleController extends Controller
     {
         try {
             Role::destroy($id);
-            return redirect()->back()->with('success', 'Role updated successfuly.');
+            return redirect()->back()->with('success', 'Role deleted successfuly.');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }

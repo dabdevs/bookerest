@@ -11,7 +11,7 @@ import RoleForm from '@/Components/forms/RoleForm';
 export default function Roles({ auth, roles }) {
     const [showForm, setShowForm] = useState(false)
     const [inputError, setInputError] = useState('')
-    const [deleteBtnDisabled, setDeleteBtnDisabled] = useState(false)
+    const [disableBtn, setDisableBtn] = useState(false)
     const { data, setData, post, put, delete:destroy, processing, errors, reset } = useForm({
         id: '',
         name: '',
@@ -35,13 +35,13 @@ export default function Roles({ auth, roles }) {
             setData({ id: id, name: $input.name })
 
             // Disable all delete buttons
-            setDeleteBtnDisabled(true)
+            setDisableBtn(true)
         } else {
             // Reset data
             setData({ id: '', name: '' })
 
             // Enable all delete buttons
-            setDeleteBtnDisabled(false)
+            setDisableBtn(false)
         }
     }, [data.id])
 
@@ -65,7 +65,7 @@ export default function Roles({ auth, roles }) {
         setData({ id: '', name: '' })
 
         // Enable all delete buttons
-        setDeleteBtnDisabled(false)
+        setDisableBtn(false)
     };
 
     const handleCreate = (e) => {
@@ -88,12 +88,17 @@ export default function Roles({ auth, roles }) {
         setData('id', '')
     }
 
+    const openForm = () => {
+        setData('name', '')
+        setShowForm(!showForm)
+    }
+
     return (
         <AuthenticatedLayout
             user={auth.user}
         >
             <section className="w-full px-4 container mx-auto">
-                <NewButton onClick={() => setShowForm(!showForm)} />
+                <NewButton disabled={disableBtn} onClick={openForm} />
 
                 <div className="flex flex-col">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -161,7 +166,7 @@ export default function Roles({ auth, roles }) {
                                                         <div className="flex items-center gap-x-6">
                                                             {data.id === r.id ?
                                                                 <SaveButton className='btn-sm' />
-                                                                : <DeleteButton onClick={() => handleDelete(r.id)} disabled={deleteBtnDisabled} className='btn-sm' />
+                                                                : <DeleteButton onClick={() => handleDelete(r.id)} disabled={disableBtn} className='btn-sm' />
                                                             }
                                                         </div>
                                                     </td>
