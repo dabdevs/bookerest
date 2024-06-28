@@ -1,12 +1,59 @@
-import React from 'react'
+import React, { useState } from 'react'
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import TextInput from '@/Components/TextInput';
 import SaveButton from '@/Components/SaveButton';
+import { useForm } from '@inertiajs/react';
+import NewButton from '../NewButton';
 
-export default function RoleForm({ setShowForm, submit, data, setData, errors }) {
+export default function RoleForm({ setShowForm, role }) {
+    const { data, setData, post, put, delete: destroy, processing, errors, reset } = useForm(role || {
+        id: '',
+        name: '',
+        permissions: []
+    });
+    
+    const [newPermission, setNewPermission] = useState('')
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        setData('name', '')
+
+        setShowForm(!showForm)
+
+        // Send update request
+        put(route('roles.update', data.id))
+
+        setData({ id: '', name: '', permissions: [] })
+    };
+
+    const handleCreate = (e) => {
+        e.preventDefault()
+
+        // Send create request
+        post(route('roles.store'), {
+            onSuccess: (page) => {
+                // Get new created ID
+                const roleId = page.props.flash.extraData.roleId;
+
+                // Set new data ID
+                setData('id', roleId)
+            },
+            onError: (errors) => {
+                console.error(errors);
+            },
+        });
+
+        if (Object.keys(errors).length === 0) {
+            setData('name', '')
+        } else {
+            setShowForm(false)
+        }
+    }
+
     return (
-        <form onSubmit={submit} className={`relative z-10 ease-out duration-300 opacity-100'}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <form onSubmit={data.id ? handleUpdate : handleCreate} className={`relative z-10 ease-out duration-300 opacity-100'}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -17,10 +64,9 @@ export default function RoleForm({ setShowForm, submit, data, setData, errors })
                                 <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Create Role</h3>
                                 <div className="mt-2 w-full">
                                     <InputLabel htmlFor="name" value="Name" />
-
                                     <TextInput
                                         id="name"
-                                        type="name"
+                                        type="text"
                                         name="name"
                                         defaultValue={data.name}
                                         className="mt-1 border py-2 block w-full"
@@ -30,6 +76,34 @@ export default function RoleForm({ setShowForm, submit, data, setData, errors })
 
                                     <InputError message={errors.name} className="mt-2" />
                                 </div>
+                                {
+                                    data.id && <div className="mt-2 w-full">
+                                        <InputLabel htmlFor="name" value="Permissions" />
+                                        <div className='flex gap-2'>
+                                            <TextInput
+                                                id="name"
+                                                type="text"
+                                                className="mt-1 border py-2 block w-full"
+                                                autoFocus
+                                                value={newPermission}
+                                                onChange={(e) => setNewPermission(e.target.value)}
+                                            />
+                                            <NewButton />
+                                        </div>
+                                        <InputError message={errors.name} className="mt-2" />
+                                        <div id="permissions" className="mt-1 w-full h-60 overflow-y-scroll">
+                                            {
+                                                data.permissions?.map(permission => (
+                                                    <div className='flex gap-2 mb-2' key={permission.id}>
+                                                        <input type='checkbox' className='mt-1' value={permission.id} />
+                                                        <p>{permission.name}</p>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                        <InputError message={errors.permissions} className="mt-2" />
+                                    </div>
+                                }
                             </div>
                         </div>
                         <div className="bg-gray-50 px-4 py-3 gap-2 sm:flex sm:flex-row-reverse sm:px-6">

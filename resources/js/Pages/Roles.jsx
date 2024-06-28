@@ -9,43 +9,18 @@ import EditButton from '@/Components/EditButton';
 
 export default function Roles({ auth, roles }) {
     const [showForm, setShowForm] = useState(false)
-    const { data, setData, post, put, delete:destroy, processing, errors, reset } = useForm({
+    const { data, setData, delete:destroy } = useForm({
         id: '',
         name: '',
+        permissions: []
     });
-
-    const handleUpdate = (e) => {
-        e.preventDefault();
-
-        setData('name', '')
-
-        setShowForm(!showForm)
-
-        // Send update request
-        put(route('roles.update', data.id))
-
-        setData({ id: '', name: '' })
-    };
-
-    const handleCreate = (e) => {
-        e.preventDefault()
-
-        // Send create request
-        post(route('roles.store', data))
-        console.log(Object.keys(errors).length === 0)
-        if (Object.keys(errors).length === 0) {
-            setData('name', '')
-        } else {
-            console.log('close form')
-            setShowForm(false)
-        }
-    }
     
     const handleDelete = (id) => {
         if (confirm('Confirm delete?') ){
             // Send delete request
             destroy(route('roles.destroy', id))
         }
+
         setData('id', '')
     }
 
@@ -97,38 +72,14 @@ export default function Roles({ auth, roles }) {
                                                         {r.id}
                                                     </td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                                        {/* {
-                                                            data.id === r.id ?
-                                                                <>
-                                                                    <div className="w-full">
-                                                                        <TextInput
-                                                                            id="name"
-                                                                            name={r.name} 
-                                                                            className={`border ${inputError === r.id ? 'border-red-400' : 'border-gray-400'} rounded p-1 text-gray-800 focus:ring-0 sm:text-sm sm:leading-6`}
-                                                                            value={data.name}
-                                                                            autoFocus
-                                                                            onChange={(e) => setData({ id: r.id, name: e.target.value })}
-                                                                        />
-                                                                    </div>
-                                                                    {
-                                                                        inputError === r.id &&
-                                                                        <div className='text-red-400'>Field is required</div>
-                                                                    }
-                                                                </>
-                                                                : r.name
-                                                        } */}
                                                         {r.name}
                                                     </td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">{format(new Date(r.created_at), 'MMMM dd, yyyy')}</td>
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">{formatDistanceToNow(parseISO(r.updated_at))} ago</td>
                                                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                                                         <div className="flex items-center gap-x-6">
-                                                            <EditButton onClick={() => openForm({ 'id': r.id, name: r.name })} className='btn-sm' />
+                                                            <EditButton onClick={() => openForm({ 'id': r.id, 'name': r.name, 'permissions': r.permissions })} className='btn-sm' />
                                                             <DeleteButton onClick={() => handleDelete(r.id)} className='btn-sm' />
-                                                            {/* {data.id === r.id ?
-                                                                <SaveButton className='btn-sm' />
-                                                                : <DeleteButton onClick={() => handleDelete(r.id)} className='btn-sm' />
-                                                            } */}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -141,7 +92,7 @@ export default function Roles({ auth, roles }) {
                     </div>
                 </div>
 
-                {showForm && <RoleForm data={data} setData={setData} errors={errors} setShowForm={setShowForm} submit={data.id ? handleUpdate : handleCreate} />}
+                {showForm && <RoleForm role={data} setShowForm={setShowForm} />}
             </section>
         </AuthenticatedLayout>
     )

@@ -13,10 +13,11 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::all()->map(function ($role) {
+        $roles = Role::with('permissions')->get()->map(function ($role) {
             return [
                 'id' => $role->id,
                 'name' => $role->name,
+                'permissions' => $role->permissions,
                 'created_at' => $role->created_at->toIso8601String(), 
                 'updated_at' => $role->created_at->toIso8601String(), 
             ];
@@ -33,8 +34,9 @@ class RoleController extends Controller
     public function store(RoleRequest $request) 
     {
         try {
-            Role::create(["name" => Str::lower($request->name)]);
-            return redirect()->back()->with('success', 'Role created successfuly.');
+            $role = Role::create(["name" => Str::lower($request->name)]);
+
+            return redirect()->back()->with(['extraData' => ['roleId' => $role->id], 'success' => 'Role created successfuly.']);
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
