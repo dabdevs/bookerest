@@ -8,7 +8,7 @@ import Sidebar from '@/Components/Sidebar';
 
 export default function AuthenticatedLayout({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    
+    console.log('layout reloaded')
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="border-b border-gray-100">

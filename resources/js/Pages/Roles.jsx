@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import DeleteButton from '@/Components/DeleteButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -6,10 +6,14 @@ import NewButton from '@/Components/NewButton';
 import { useForm } from '@inertiajs/react';
 import RoleForm from '@/Components/forms/RoleForm';
 import EditButton from '@/Components/EditButton';
+import useModal from '@/Components/hooks/useModal';
+import Modal from '@/Components/Modal';
 
-export default function Roles({ auth, roles }) {
+const Roles = React.memo(({ auth, roles }) => {
+    const { isOpen, openModal, closeModal } = useModal();
+    console.log('list reloaded')
     const [showForm, setShowForm] = useState(false)
-    const { data, setData, delete:destroy } = useForm({
+    const { data, setData, delete:destroy, reset} = useForm({
         id: '',
         name: '',
         permissions: []
@@ -24,17 +28,16 @@ export default function Roles({ auth, roles }) {
         setData('id', '')
     }
 
-    const openForm = (data={}) => {
-        setData(data)
-        setShowForm(!showForm)
-    }
-
     return (
         <AuthenticatedLayout
             user={auth.user}
         >
             <section className="w-full px-4 container mx-auto">
-                <NewButton onClick={() => openForm()} />
+                <NewButton onClick={() => {reset(); openModal()}} />
+
+                <Modal isOpen={isOpen}>
+                    <RoleForm role={data} closeModal={closeModal}/>
+                </Modal>
 
                 <div className="flex flex-col">
                     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -78,7 +81,7 @@ export default function Roles({ auth, roles }) {
                                                     <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">{formatDistanceToNow(parseISO(r.updated_at))} ago</td>
                                                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                                                         <div className="flex items-center gap-x-6">
-                                                            <EditButton onClick={() => openForm({ 'id': r.id, 'name': r.name, 'permissions': r.permissions })} className='btn-sm' />
+                                                            <EditButton onClick={() => {setData({ 'id': r.id, 'name': r.name, 'permissions': r.permissions }); openModal()}} className='btn-sm' />
                                                             <DeleteButton onClick={() => handleDelete(r.id)} className='btn-sm' />
                                                         </div>
                                                     </td>
@@ -96,4 +99,6 @@ export default function Roles({ auth, roles }) {
             </section>
         </AuthenticatedLayout>
     )
-}
+})
+
+export default Roles

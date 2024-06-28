@@ -6,6 +6,7 @@ export default function NewButton({ className = '', disabled, children, ...props
 
     return (
         <button
+            type="button"
             {...props}
             className={
                 `inline-flex items-center px-2 gap-1 ${size} bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none transition ease-in-out duration-150 ${disabled && 'opacity-25'
@@ -14,7 +15,7 @@ export default function NewButton({ className = '', disabled, children, ...props
             disabled={disabled}
         >
             <PlusIcon />
-            New
+            {children ? children : 'New'}
         </button>
     );
 }
