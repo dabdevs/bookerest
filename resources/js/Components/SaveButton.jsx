@@ -7,8 +7,7 @@ export default function SaveButton({ className = '', disabled, children, ...prop
 
     return (
         <PrimaryButton className={`gap-1 ${size}`}>
-            <SaveIcon />
-            Save
+            {children ? children : <><SaveIcon /> Save</>}
         </PrimaryButton>
     );
 }

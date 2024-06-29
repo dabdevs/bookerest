@@ -34,5 +34,7 @@ Route::get('/google/callback', [GoogleLoginController::class, 'handleGoogleCallb
 
 // Roles routes
 Route::resource('roles', RoleController::class)->middleware(AdminMiddleware::class);
+Route::post('/roles/{roleId}/add', [RoleController::class, 'addPermission'])->name('roles.permissions.add');
+Route::post('/roles/{roleId}/{permissionId}/remove', [RoleController::class, 'removePermission'])->name('roles.permissions.remove');
 
 require __DIR__.'/auth.php';

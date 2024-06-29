@@ -5,18 +5,15 @@ import TextInput from '@/Components/TextInput';
 import SaveButton from '@/Components/SaveButton';
 import { useForm } from '@inertiajs/react';
 import NewButton from '../NewButton';
-import PrimaryButton from '../PrimaryButton';
-import SecondaryButton from '../SecondaryButton';
 
 const  RoleForm = React.memo(({ role, closeModal }) => {
     console.log('form reloaded')
     const { data, setData, post, put, processing, errors, reset } = useForm(role || {
         id: '',
         name: '',
-        permissions: []
+        permissions: role.permissions || [],
+        newPermission: ''
     });
-    
-    const [newPermission, setNewPermission] = useState('')
 
     const handleUpdate = useCallback((e) => {
         e.preventDefault();
@@ -27,10 +24,10 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
         reset()
     });
 
-    const handleCreate = (e) => {
+    const handleCreate = useCallback((e) => {
         e.preventDefault()
 
-        // Send create request
+        // Send post request
         post(route('roles.store'), {
             onSuccess: (page) => {
                 // Get new created ID
@@ -49,7 +46,25 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
         } else {
             closeModal(true)
         }
-    }
+    })
+
+    const addPermission = useCallback((e) => {
+        e.preventDefault()
+
+        // Send create request
+        post(route('roles.permissions.add', data.id), {
+            onSuccess: (page) => {
+                const newPermission = page.props.flash.extraData.newPermission
+                const permissions = data.permissions.push(newPermission)
+                setData('permissions', permissions)
+                setData('newPermission', '')
+            },
+            onError: (errors) => {
+                console.error(errors);
+            },
+        });
+    })
+    console.log(data.permissions)
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -88,11 +103,16 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
                                             type="text"
                                             className="mt-1 border py-2 block w-full"
                                             autoFocus
-                                            value={newPermission}
-                                            onChange={(e) => setNewPermission(e.target.value)}
+                                            defaultValue={data.newPermission}
+                                            onChange={(e) => setData('newPermission', e.target.value)}
                                             onKeyDown={handleKeyDown}
                                         />
-                                        <NewButton>Add</NewButton>
+                                        <NewButton 
+                                            onClick={addPermission}
+                                            disabled={data.newPermission === ''}
+                                            className='btn-sm'
+                                            >Add
+                                        </NewButton>
                                     </div>
                                     <InputError message={errors.permission} className="mt-2" />
                                     <div id="permissions" className="mt-1 w-full h-60 overflow-y-scroll">

@@ -92,14 +92,10 @@ export default function Login({ status, canResetPassword }) {
                     </PrimaryButton>
                 </div>
                 <a href={route('google.redirect')} className="flex gap-2 items-center justify-center mt-2">
-                    <svg viewBox="-0.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" className="w-8 h-8">
-
+                    <svg viewBox="-0.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" className="w-8 h-8">
                         <title>Google-color</title>
                         <desc>Created with Sketch.</desc>
-                        <defs>
-
-                        </defs>
-                        <g id="Icons" stroke="none" strokeWidth="1" fill="none" fill-rule="evenodd">
+                        <g id="Icons" stroke="none" strokeWidth="1" fill="none" fillrrule="evenodd">
                             <g id="Color-" transform="translate(-401.000000, -860.000000)">
                                 <g id="Google" transform="translate(401.000000, 860.000000)">
                                     <path d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24" id="Fill-1" fill="#FBBC05">
@@ -118,7 +114,7 @@ export default function Login({ status, canResetPassword }) {
                             </g>
                         </g>
                     </svg>
-                    <p className>Login with Google</p>
+                    <p>Login with Google</p>
                 </a>
             </form>
         </GuestLayout>
