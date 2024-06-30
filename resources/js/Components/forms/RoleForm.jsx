@@ -8,7 +8,7 @@ import NewButton from '../NewButton';
 
 const  RoleForm = React.memo(({ role, closeModal }) => {
     console.log('form reloaded')
-    const { data, setData, post, put, processing, errors, reset } = useForm(role || {
+    const { data, setData, post, put, processing, setError, errors, reset } = useForm(role || {
         id: '',
         name: '',
         permissions: role.permissions || [],
@@ -18,6 +18,13 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
     const handleUpdate = useCallback((e) => {
         e.preventDefault();
 
+        if (data.name === '' || typeof data.name === 'undefined') {
+            setError('name', 'Field is required')
+            return
+        } else {
+            setError('name', '')
+        }
+
         // Send update request
         put(route('roles.update', data.id))
 
@@ -26,6 +33,13 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
 
     const handleCreate = useCallback((e) => {
         e.preventDefault()
+
+        if (data.name === '' || typeof data.name === 'undefined') {
+            setError('name', 'Field is required')
+            return
+        } else {
+            setError('name', '')
+        }
 
         // Send post request
         post(route('roles.store'), {
@@ -51,6 +65,13 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
     const addPermission = useCallback((e) => {
         e.preventDefault()
 
+        if (data.newPermission === '' || typeof data.newPermission === 'undefined') {
+            setError('newPermission', 'Field is required')
+            return
+        } else {
+            setError('newPermission', '')
+        }
+
         // Send create request
         post(route('roles.permissions.add', data.id), {
             onSuccess: (page) => {
@@ -64,7 +85,6 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
             },
         });
     })
-    console.log(data.permissions)
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -73,7 +93,7 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
     }
 
     return (
-        <form onSubmit={data.id !== '' ? handleUpdate : handleCreate} className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <form onSubmit={data.id !== '' || typeof data.id === 'undefined' ? handleUpdate : handleCreate} className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                 <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -96,25 +116,26 @@ const  RoleForm = React.memo(({ role, closeModal }) => {
                             </div>
                             {
                                 data.id && <div className="mt-2 w-full">
-                                    <InputLabel htmlFor="permission" value="Permissions" />
+                                    <InputLabel value="Permissions" />
                                     <div className='flex gap-2'>
                                         <TextInput
-                                            id="permission"
+                                            id="newPermission"
                                             type="text"
                                             className="mt-1 border py-2 block w-full"
                                             autoFocus
-                                            defaultValue={data.newPermission}
+                                            value={data.newPermission || ''}
                                             onChange={(e) => setData('newPermission', e.target.value)}
                                             onKeyDown={handleKeyDown}
                                         />
                                         <NewButton 
                                             onClick={addPermission}
-                                            disabled={data.newPermission === ''}
+                                            disabled={data.newPermission === '' || typeof data.newPermission === 'undefined'}
                                             className='btn-sm'
-                                            >Add
+                                            >
+                                            Add
                                         </NewButton>
                                     </div>
-                                    <InputError message={errors.permission} className="mt-2" />
+                                    <InputError message={errors.newPermission} className="mt-2" />
                                     <div id="permissions" className="mt-1 w-full h-60 overflow-y-scroll">
                                         {
                                             data.permissions?.map(permission => (
